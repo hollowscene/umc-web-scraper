@@ -11,6 +11,9 @@ Note that Google Sheets API has a limit of 100 write requests per 100 seconds pe
 Please do not increase the rate beyond this limit.
 
 
+quick note: the ? column is for old spawn points and I would also guess old mars balls. In current maps spawn point and mars ball data are stored in the json files and show up as tiles in the png files  
+In past maps the json files do not contain any information about spawn points or mars ball and they are shown as different tiles in the png files.
+
 
 
 This code sucks, plenty of optimisations for someone better at coding.
@@ -32,8 +35,7 @@ Move redundant code to a new section or just move it to a new file entirely (web
 Make it easier for other people to download the code and use a private API key that I provide  
 
 
-<b>References</b>
-
+<b>References</b>  
 Most code is sourced from  
 https://realpython.com/beautiful-soup-web-scraper-python/#part-2-scrape-html-content-from-a-page  
 Additional sources  
