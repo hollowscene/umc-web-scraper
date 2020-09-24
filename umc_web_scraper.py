@@ -237,7 +237,7 @@ def gsheets_input(map_data, sheet):
                        tile_data[22], tile_data[23], tile_data[24], marsballs,
                        tile_data[25]]]
 
-    sheet.update(f"A{row}:AH{row}", row_inputs)
+    sheet.update(f"A{row}:AI{row}", row_inputs)
 
 
 def gsheets_header_row(sheet):
@@ -252,7 +252,7 @@ def gsheets_header_row(sheet):
                   "Button", "Gate", "Bomb", "Mars Ball", "?"]
 
     # check if there is already a header row
-    if sheet.acell("AH1").value == "Mars Ball":
+    if sheet.acell("AI1").value == "?":
         pass
     else:
         sheet.insert_row(header_row, index=1, value_input_option="RAW")
