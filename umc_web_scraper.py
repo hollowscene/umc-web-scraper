@@ -192,33 +192,6 @@ def gsheets_input(map_data, sheet):
     """Update values of the Google Sheets."""
     map_id, map_name, map_author, tags, width, height, tile_data, marsballs = map_data
     row = ((map_id - 1) % 100) + 2
-    # map_id
-    """
-    sheet.update(f"B{row}", str(map_id).zfill(5))
-    if map_name is None:
-        # invalid map
-        sheet.update_cell(row, 1, "INVALID")
-    else:
-        sheet.update_cell(row, 3, map_name)
-        time.sleep(1)
-        sheet.update_cell(row, 4, map_author)
-        time.sleep(1)
-        sheet.update_cell(row, 5, tags)
-        time.sleep(1)
-        sheet.update_cell(row, 7, width)
-        time.sleep(1)
-        sheet.update_cell(row, 8, height)
-        time.sleep(1)
-
-        for i in range(9, 34):
-            try:
-                sheet.update_cell(row, i, tile_data[i-9])
-            except KeyError:
-                sheet.update_cell(row, i, 0)
-            time.sleep(1)
-
-        sheet.update_cell(row, 34, marsballs)
-    """
 
     if map_name is None:
         row_inputs = [["INVALID", str(map_id).zfill(5), "", "", "", "", "", "",
@@ -242,20 +215,20 @@ def gsheets_input(map_data, sheet):
 
 def gsheets_header_row(sheet):
     """Initialise sheet with a header row."""
-    header_row = ["Reserved by", "ID", "Name", "Author", "Tags", "Notes",
-                  "Width", "Height", "Wall", "Wall TL", "Wall TR", "Wall BL",
-                  "Wall BR", "Tile", "Background", "Spike", "Powerup",
-                  "Portal", "Gravity Well", "Yellow Flag",
-                  "Red Flag", "Blue Flag", "Red Endzone", "Blue Endzone",
-                  "Boost", "Red Team Boost", "Blue Team Boost",
-                  "Yellow Speed Tile", "Red Speed Tile", "Blue Speed Tile",
-                  "Button", "Gate", "Bomb", "Mars Ball", "?"]
+    header_row = [["Reserved by", "ID", "Name", "Author", "Tags", "Notes",
+                   "Width", "Height", "Wall", "Wall TL", "Wall TR", "Wall BL",
+                   "Wall BR", "Tile", "Background", "Spike", "Powerup",
+                   "Portal", "Gravity Well", "Yellow Flag",
+                   "Red Flag", "Blue Flag", "Red Endzone", "Blue Endzone",
+                   "Boost", "Red Team Boost", "Blue Team Boost",
+                   "Yellow Speed Tile", "Red Speed Tile", "Blue Speed Tile",
+                   "Button", "Gate", "Bomb", "Mars Ball", "Deprecated"]]
 
     # check if there is already a header row
     if sheet.acell("AI1").value == "?":
         pass
     else:
-        sheet.insert_row(header_row, index=1, value_input_option="RAW")
+        sheet.update("A1:AI1", header_row)
 
 
 # %%
