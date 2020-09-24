@@ -37,7 +37,8 @@ Add functionality that checks whether a cell that is about to be updated is alre
 Proper commenting  
 Move redundant code to a new section or just move it to a new file entirely (web scraping stuff is useful, but its irrelevant now that I can access the json/png files)  
 Make it easier for other people to download the code and use a private API key that I provide  
-Create user interface
+Create user interface  
+Automate CTF/NF/Mars Ball tags (will not always be right but it'll catch like 99% of cases)
 
 
 <b>References</b>  
