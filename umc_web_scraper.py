@@ -4,21 +4,7 @@ Unfortunate Maps Catalogue Webscraper.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 14/09/20
-
-Most code is sourced from
-https://realpython.com/beautiful-soup-web-scraper-python/#part-2-scrape-html-content-from-a-page
-
-Additional sources
-https://www.twilio.com/blog/2017/02/an-easy-way-to-read-and-write-to-a-google-spreadsheet-in-python.html
-https://stackoverflow.com/questions/38709324/unexpected-credentials-type-none-expected-service-account-with-oauth2
-https://stackoverflow.com/questions/49258566/gspread-authentication-throwing-insufficient-permission
-https://gspread.readthedocs.io/en/latest/api.html
-
-
-TO-DO
-Add functionality that checks whether a cell that is about to be updated is
-already filled and raise exception if so. PNG/JSON parser.
+@last-updated: 24/09/20
 """
 
 
@@ -27,6 +13,7 @@ from bs4 import BeautifulSoup
 import time
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import collections
 
 
 # %%
@@ -35,9 +22,6 @@ import json
 import PIL
 
 # test_url = "http://unfortunate-maps.jukejuice.com/show/75634"
-
-json_file_path = "C:\\Users\\andre\\Desktop\\test.json"
-png_file_path = "C:\\Users\\andre\\Desktop\\test.png"
 
 
 """
@@ -53,9 +37,26 @@ def parse_json(json_file_path):
 
     To-do.
     """
+    gamemode = "normal"
+    marsballs = 0
+
     with open(json_file_path) as f:
         json_data = json.load(f)
-    return json_data
+
+        try:
+            gamemode = json_data["info"]["gameMode"]
+        except KeyError:
+            pass
+
+        map_name = json_data["info"]["name"]
+        map_author = json_data["info"]["author"]
+
+        try:
+            marsballs = len(json_data["marsballs"])
+        except KeyError:
+            pass
+
+    return gamemode, map_name, map_author, marsballs
 
 
 def parse_png(png_file_path):
@@ -93,7 +94,9 @@ def parse_png(png_file_path):
                  (187, 184, 221): 21,   # blue team tile
                  (185, 122, 87): 22,    # button
                  (0, 117, 0): 23,       # gate (grey/green/red/blue)
-                 (255, 128, 0): 24      # bomb
+                 (255, 128, 0): 24,     # bomb
+                 (155, 0, 0): 25,       # invalid tile i found on old maps
+                 (0, 0, 155): 25        # invalid tile i found on old maps
                  }
 
     for pixel_data in map_pixel_data:
@@ -105,28 +108,24 @@ def parse_png(png_file_path):
     return width, height, pixel_list
 
 
-def download_json(soup):
-    """Download json file from link in html soup.
+def download_json(map_id):
+    """Download json file from link."""
+    json_link = f"http://unfortunate-maps.jukejuice.com/download?mapname={map_id}&type=json&mapid={map_id}"
+    with open(f"{map_id}.json", "wb") as f:
+        response = requests.get(json_link)
+        f.write(response.content)
 
-    The HTML code that contains the dl link will look like this:
-    <a href="json_dl_link" download="map_name" class="btn btn-primary">json</a>
-
-    TO DO
-    """
-    json_file_path = None
-    return json_file_path
+    return f"{map_id}.json"
 
 
-def download_png(soup):
-    """Download png file from link in html soup.
+def download_png(map_id):
+    """Download png file from link."""
+    png_link = f"http://unfortunate-maps.jukejuice.com/download?mapname={map_id}&type=png&mapid={map_id}"
+    with open(f"{map_id}.png", "wb") as f:
+        response = requests.get(png_link)
+        f.write(response.content)
 
-    The HTML code that contains the dl link will look like this:
-    <a href="png_dl_link" download="map_name" class="btn btn-primary">png</a>
-
-    TO DO
-    """
-    png_file_path = None
-    return png_file_path
+    return f"{map_id}.png"
 
 
 # %%
@@ -189,26 +188,55 @@ def access_gsheets_api(index):
     return sheet
 
 
-def gsheets_input(map_id, map_name, map_author, sheet):
+def gsheets_input(map_data, sheet):
     """Update values of the Google Sheets."""
+    map_id, map_name, map_author, tags, width, height, tile_data, marsballs = map_data
     row = ((map_id - 1) % 100) + 2
+    # map_id
+    """
     sheet.update(f"B{row}", str(map_id).zfill(5))
     if map_name is None:
         # invalid map
         sheet.update_cell(row, 1, "INVALID")
     else:
-        # map name
         sheet.update_cell(row, 3, map_name)
-        # put author here
+        time.sleep(1)
         sheet.update_cell(row, 4, map_author)
+        time.sleep(1)
+        sheet.update_cell(row, 5, tags)
+        time.sleep(1)
+        sheet.update_cell(row, 7, width)
+        time.sleep(1)
+        sheet.update_cell(row, 8, height)
+        time.sleep(1)
 
-    """
-    sheet.update_cell(row, 7, width)
-    sheet.update_cell(row, 8, height)
+        for i in range(9, 34):
+            try:
+                sheet.update_cell(row, i, tile_data[i-9])
+            except KeyError:
+                sheet.update_cell(row, i, 0)
+            time.sleep(1)
 
-    for i in range(9, 34):
-        sheet.update_cell(row, i, tile_counts[i])
+        sheet.update_cell(row, 34, marsballs)
     """
+
+    if map_name is None:
+        row_inputs = [["INVALID", str(map_id).zfill(5), "", "", "", "", "", "",
+                       "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                       "", "", "", "", "", "", "", "", "", "", "", ""]]
+    else:
+
+        row_inputs = [["", str(map_id).zfill(5), map_name, map_author, tags,
+                       "", width, height, tile_data[0], tile_data[1],
+                       tile_data[2], tile_data[3], tile_data[4], tile_data[5],
+                       tile_data[6], tile_data[7], tile_data[8], tile_data[9],
+                       tile_data[10], tile_data[11], tile_data[12],
+                       tile_data[13], tile_data[14], tile_data[15],
+                       tile_data[16], tile_data[17], tile_data[18],
+                       tile_data[19], tile_data[20], tile_data[21],
+                       tile_data[22], tile_data[23], tile_data[24], marsballs]]
+
+    sheet.update(f"A{row}:AH{row}", row_inputs)
 
 
 def gsheets_header_row(sheet):
@@ -216,14 +244,17 @@ def gsheets_header_row(sheet):
     header_row = ["Reserved by", "ID", "Name", "Author", "Tags", "Notes",
                   "Width", "Height", "Wall", "Wall TL", "Wall TR", "Wall BL",
                   "Wall BR", "Tile", "Background", "Spike", "Powerup",
-                  "Portal", "Gravity Well", "Mars Ball", "Yellow Flag",
-                  "Red Flag", "Blue Flag", "Red Spawn Tile", "Blue Spawn Tile",
-                  "Red Endzone", "Blue Endzone", "Boost", "Red Team Boost",
-                  "Blue Team Boost", "Yellow Speed Tile", "Red Speed Tile",
-                  "Blue Speed Tile", "Button", "Gate Off", "Gate On",
-                  "Gate Red", "Gate Blue", "Bomb"]
+                  "Portal", "Gravity Well", "Yellow Flag",
+                  "Red Flag", "Blue Flag", "Red Endzone", "Blue Endzone",
+                  "Boost", "Red Team Boost", "Blue Team Boost",
+                  "Yellow Speed Tile", "Red Speed Tile", "Blue Speed Tile",
+                  "Button", "Gate", "Bomb", "Mars Ball"]
 
-    sheet.insert_row(header_row, index=1, value_input_option="RAW")
+    # check if there is already a header row
+    if sheet.acell("AH1").value == "Mars Ball":
+        pass
+    else:
+        sheet.insert_row(header_row, index=1, value_input_option="RAW")
 
 
 # %%
@@ -231,23 +262,31 @@ def gsheets_header_row(sheet):
 def main(start, end):
     """Iterate through urls from start to end (inclusive)."""
     for map_id in range(start, end + 1):
-        soup = umc_web_scraper(map_id)
+        start_time = time.time()
+        # soup = umc_web_scraper(map_id)
 
-        map_name = html_text_parser(parse_map_name(soup))
-        map_author = html_text_parser(parse_map_author(soup))
+        # map_name = html_text_parser(parse_map_name(soup))
+        # map_author = html_text_parser(parse_map_author(soup))
+
+        json_data = parse_json(download_json(map_id))
+        png_data = parse_png(download_png(map_id))
+
+        gamemode, map_name, map_author, marsballs = json_data
+        width, height, pixel_list = png_data
+
+        tile_data = collections.Counter(pixel_list)
 
         if map_author == "Anonymous":
             # could just leave it as anonymous if you want
             map_author = ""
 
+        tags = ""
+        if gamemode == "gravity":
+            tags = "Gravity"
+        elif gamemode == "gravityCTF":
+            tags = "GravityCTF"
+
         index = (((map_id % 10000) % 1000) - 1) // 100
-        x = str(map_id).zfill(5)
-        if map_author is None:
-            print(f"{x}: Invalid map.")
-        elif map_author == "":
-            print(f"{x}: Processed {map_name} on sheet {index}.")
-        else:
-            print(f"{x}: Processed {map_name} by {map_author} on sheet {index}.")
 
         # only open a new sheet if you need to
         if map_id == start:
@@ -260,13 +299,25 @@ def main(start, end):
             sheet = access_gsheets_api(index)
             gsheets_header_row(sheet)
 
-        gsheets_input(map_id, map_name, map_author, sheet)
+        input_data = [map_id, map_name, map_author, tags, width, height, tile_data, marsballs]
+        gsheets_input(input_data, sheet)
+
+        x = str(map_id).zfill(5)
+        if map_author is None:
+            print(f"{x}: Invalid map.")
+        elif map_author == "":
+            print(f"{x}: Processed {map_name} on sheet {index}.")
+        else:
+            print(f"{x}: Processed {map_name} by {map_author} on sheet {index}.")
+        print(f"{time.time() - start_time}s")
 
         previous_index = index
 
         # limit speed. 1/second = 60/minute = 3600/hour
         # probably wouldn't suggest any less than 1 second sleep
-        time.sleep(5)
+
+        # note that google sheets limits writing to 100 write requests per 100 seconds
+        time.sleep(3)
 
 
 # %%
@@ -285,5 +336,8 @@ The code will automatically add a header row.
 """
 
 if __name__ == "__main__":
+    start_total_time = time.time()
+    print("Started Processing")
     # main(1, 200)
-    pass
+    print("Completed Processing")
+    print(f"Total processing time: {time.time() - start_total_time}s")
