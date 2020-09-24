@@ -223,7 +223,7 @@ def gsheets_input(map_data, sheet):
     if map_name is None:
         row_inputs = [["INVALID", str(map_id).zfill(5), "", "", "", "", "", "",
                        "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-                       "", "", "", "", "", "", "", "", "", "", "", ""]]
+                       "", "", "", "", "", "", "", "", "", "", "", "", ""]]
     else:
 
         row_inputs = [["", str(map_id).zfill(5), map_name, map_author, tags,
@@ -234,7 +234,8 @@ def gsheets_input(map_data, sheet):
                        tile_data[13], tile_data[14], tile_data[15],
                        tile_data[16], tile_data[17], tile_data[18],
                        tile_data[19], tile_data[20], tile_data[21],
-                       tile_data[22], tile_data[23], tile_data[24], marsballs]]
+                       tile_data[22], tile_data[23], tile_data[24], marsballs,
+                       tile_data[25]]]
 
     sheet.update(f"A{row}:AH{row}", row_inputs)
 
@@ -248,7 +249,7 @@ def gsheets_header_row(sheet):
                   "Red Flag", "Blue Flag", "Red Endzone", "Blue Endzone",
                   "Boost", "Red Team Boost", "Blue Team Boost",
                   "Yellow Speed Tile", "Red Speed Tile", "Blue Speed Tile",
-                  "Button", "Gate", "Bomb", "Mars Ball"]
+                  "Button", "Gate", "Bomb", "Mars Ball", "?"]
 
     # check if there is already a header row
     if sheet.acell("AH1").value == "Mars Ball":
