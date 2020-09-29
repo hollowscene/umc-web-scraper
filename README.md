@@ -1,6 +1,21 @@
 # umc-web-scraper
 Processing the Unfortunate Maps Catalogue.
 
+How to Use (im still working on this):  
+1. Request an API key from me via discord (iamflowting#1569). This will come in the form of a .json file for you to download. You must have a key to access the Google Sheets API.  
+2. If you don't already have Python download it from https://www.python.org/downloads/. I am running my code on the latest version of Python, I cannot guarantee it works on older versions.  
+3. Download the .py file from github and save it to your computer. I would suggest making a new folder in your documents folder. In this folder you should save the .py file and the .json API key I sent to you in step 1. Rename the .json file to "client_secret.json". This is mandatory.  
+4. Open your python file in any python ide of choice. If you do not know what a python ide is you should look up Python IDLE in your programs or just contact me for help. (to add screenshots)  
+5. You should have the code open in front of you. If not contact me for help. First thing is you will need to change the name of the sheet that you are writing to. Idk what line this is... I'll add a screenshot later/find the exact line but basically the code accesses your google sheets by its name.
+6. You will need to add the api bot as a editor participant. just go to add participants and enter this email: <to be added>
+7. Scroll down in the code till you reach the bottom. There will be a line that says "# main(1, 200)". What this means is that it will automatically process all the maps between map id 1 and 200 including 1 and 200. Replace the numbers with new values and then go to file > run if you are in Python IDLE.
+
+Things to take note of:  
+please have empty Google Sheets prepared beforehand. There should be 10 pages per sheet and each page will hold 100 entries.
+
+
+
+
 
 Test 1: Maps 1-200 on an empty sheet on my laptop (wait time between maps = 3s)  
 Total time: 17m
@@ -38,7 +53,8 @@ Proper commenting
 Move redundant code to a new section or just move it to a new file entirely (web scraping stuff is useful, but its irrelevant now that I can access the json/png files)  
 Make it easier for other people to download the code and use a private API key that I provide  
 Create user interface  
-Automate CTF/NF/Mars Ball tags (will not always be right but it'll catch like 99% of cases)
+Automate CTF/NF/Mars Ball tags (will not always be right but it'll catch like 99% of cases)  (not necessary)
+Make tags into a list. tags = ["INVALID"]. When writing to google sheets write ", ".join(tags). This is just futureproofing. 
 
 
 <b>References</b>  
