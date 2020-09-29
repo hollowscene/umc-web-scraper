@@ -8,7 +8,7 @@ How to Use (im still working on this):
 4. Open your python file in any python ide of choice. If you do not know what a python ide is you should look up Python IDLE in your programs or just contact me for help. (to add screenshots)  
 5. You should have the code open in front of you. If not contact me for help. First thing is you will need to change the name of the sheet that you are writing to. Idk what line this is... I'll add a screenshot later/find the exact line but basically the code accesses your google sheets by its name.
 6. You will need to add the api bot as a editor participant. just go to add participants and enter this email: <to be added>
-7. Scroll down in the code till you reach the bottom. There will be a line that says "# main(1, 200)". What this means is that it will automatically process all the maps between map id 1 and 200 including 1 and 200. Replace the numbers with new values and then go to file > run if you are in Python IDLE.
+7. Scroll down in the code till you reach the bottom. There will be a line that says "# main(1, 200)". What this means is that it will automatically process all the maps between map id 1 and 200 including 1 and 200. Replace the numbers with new values and then go to file > run if you are in Python IDLE. Note that you must stay in the range of 1-1000. If you do things write you should basically just be doing 1-1000, 1001-2000, 2001-3000 e.t.c. You will overwrite data if you do not stay within the bounds (but i would like to prevent this in the future)
 
 Things to take note of:  
 please have empty Google Sheets prepared beforehand. There should be 10 pages per sheet and each page will hold 100 entries.
@@ -53,8 +53,10 @@ Proper commenting
 Move redundant code to a new section or just move it to a new file entirely (web scraping stuff is useful, but its irrelevant now that I can access the json/png files)  
 Make it easier for other people to download the code and use a private API key that I provide  
 Create user interface  
-Automate CTF/NF/Mars Ball tags (will not always be right but it'll catch like 99% of cases)  (not necessary)
+Automate CTF/NF/Mars Ball tags (will not always be right but it'll catch like 99% of cases)  (not necessary)  
+Automatically tag invalid maps as "INVALID". Can do this by using the webscraper. Look for the name of the map in the html soup and if its not there then you can assign tags = "INVALID" 
 Make tags into a list. tags = ["INVALID"]. When writing to google sheets write ", ".join(tags). This is just futureproofing. 
+
 
 
 <b>References</b>  
