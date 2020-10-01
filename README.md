@@ -35,18 +35,18 @@ Images last updated: 01/10/20 (prior to some important v1.1 changes)
 Test 1 (v1): Maps 1-200 (wait time = 3s)  
 Total time: 1006.9392986297607s
 
-Test 2 (v1.1): To-do
+Test 2 (v1.1): To-do  
 Total time: 
 
 ## To-do
 * Add functionality that checks whether a cell that is about to be updated is already filled and raise exception if so.
-* Proper commenting
-* Move redundant code to a new section or just move it to a new file entirely (web scraping stuff is useful, but its irrelevant now that I can access the json/png files)
+* Proper commenting.
+* Move redundant code to a new section or just move it to a new file entirely (web scraping stuff is useful, but its irrelevant now that I can access the json/png files).
 * User interface?
-* Optimisations of code
+* Optimisations of code.
 * It should be possible to only use 1 write request per page by storing a huge list of all the row_inputs which would mean that the code doesn't run into the API write limit. This would likely also reduce computational time because there are less API requests.
-* Update Python and check if code works on 3.8.5
-* Update README and properly do the How to use section once you work out how to import modules with IDLE (update screenshots as well)
+* Update Python and check if code works on 3.8.5.
+* Update README and properly do the How to use section once you work out how to import modules with IDLE (update screenshots as well).
 
 ## References
 * https://realpython.com/beautiful-soup-web-scraper-python/#part-2-scrape-html-content-from-a-page 
