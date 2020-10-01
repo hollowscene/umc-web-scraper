@@ -21,14 +21,14 @@ import collections
 import json
 import PIL
 
-# test_url = "http://unfortunate-maps.jukejuice.com/show/75634"
-
-
 """
 JSON file contains gameMode, name, author, portal connections, gates,
 switches, mars ball spawns and spawn points.
 
 PNG file contains all tile placements.
+
+test url: http://unfortunate-maps.jukejuice.com/show/75634
+
 """
 
 
@@ -110,7 +110,8 @@ def parse_png(png_file_path):
 
 def download_json(map_id):
     """Download json file from link."""
-    json_link = f"http://unfortunate-maps.jukejuice.com/download?mapname={map_id}&type=json&mapid={map_id}"
+    json_link = f"http://unfortunate-maps.jukejuice.com/\
+        download?mapname={map_id}&type=json&mapid={map_id}"
     with open(f"{map_id}.json", "wb") as f:
         response = requests.get(json_link)
         f.write(response.content)
@@ -120,7 +121,8 @@ def download_json(map_id):
 
 def download_png(map_id):
     """Download png file from link."""
-    png_link = f"http://unfortunate-maps.jukejuice.com/download?mapname={map_id}&type=png&mapid={map_id}"
+    png_link = f"http://unfortunate-maps.jukejuice.com/\
+        download?mapname={map_id}&type=png&mapid={map_id}"
     with open(f"{map_id}.png", "wb") as f:
         response = requests.get(png_link)
         f.write(response.content)
@@ -147,7 +149,8 @@ def parse_map_name(soup):
     try:
         map_name = soup.find_all("h2", class_="searchable")
     except:
-        raise Exception("Could not find map name. Invalid map?")
+        print("Could not find map name. Invalid map?")
+        map_name = None
     return map_name
 
 
@@ -159,7 +162,8 @@ def parse_map_author(soup):
     try:
         map_author = soup.find_all("a", class_="searchable")
     except:
-        raise Exception("Could not find author. Invalid map?")
+        print("Could not find author. Invalid map?")
+        map_author = None
     return map_author
 
 
@@ -178,37 +182,37 @@ def html_text_parser(html_text):
 def access_gsheets_api(index):
     """Access Google Sheets document."""
     # create client to interact with Google Drive API
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("client_secret.json", scope)
+    scope = ["https://spreadsheets.google.com/feeds",
+             "https://www.googleapis.com/auth/drive"]
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
+        "client_secret.json", scope)
     client = gspread.authorize(creds)
 
     # find workbook by name and open the required sheet
-    sheet = client.open("Tagpro Unfortunate Maps Catalogue Parser Test").get_worksheet(index)
+    sheet = client.open(gsheets_name).get_worksheet(index)
 
     return sheet
 
 
 def gsheets_input(map_data, sheet):
     """Update values of the Google Sheets."""
-    map_id, map_name, map_author, tags, width, height, tile_data, marsballs = map_data
+    map_id, map_name, map_author, tags, width, height, tile_data, marsballs \
+        = map_data
     row = ((map_id - 1) % 100) + 2
 
-    if map_name is None:
-        row_inputs = [["INVALID", str(map_id).zfill(5), "", "", "", "", "", "",
-                       "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-                       "", "", "", "", "", "", "", "", "", "", "", "", ""]]
-    else:
+    print(parse_map_name(umc_web_scraper(map_id)))
+    if parse_map_name(umc_web_scraper(map_id)) is None:
+        tags = ["INVALID"]
 
-        row_inputs = [["", str(map_id).zfill(5), map_name, map_author, tags,
-                       "", width, height, tile_data[0], tile_data[1],
-                       tile_data[2], tile_data[3], tile_data[4], tile_data[5],
-                       tile_data[6], tile_data[7], tile_data[8], tile_data[9],
-                       tile_data[10], tile_data[11], tile_data[12],
-                       tile_data[13], tile_data[14], tile_data[15],
-                       tile_data[16], tile_data[17], tile_data[18],
-                       tile_data[19], tile_data[20], tile_data[21],
-                       tile_data[22], tile_data[23], tile_data[24], marsballs,
-                       tile_data[25]]]
+    row_inputs = [["", str(map_id).zfill(5), map_name, map_author,
+                   ", ".join(tags), "", width, height, tile_data[0],
+                   tile_data[1], tile_data[2], tile_data[3], tile_data[4],
+                   tile_data[5], tile_data[6], tile_data[7], tile_data[8],
+                   tile_data[9], tile_data[10], tile_data[11], tile_data[12],
+                   tile_data[13], tile_data[14], tile_data[15], tile_data[16],
+                   tile_data[17], tile_data[18], tile_data[19], tile_data[20],
+                   tile_data[21], tile_data[22], tile_data[23], tile_data[24],
+                   marsballs, tile_data[25]]]
 
     sheet.update(f"A{row}:AI{row}", row_inputs)
 
@@ -250,15 +254,17 @@ def main(start, end):
 
         tile_data = collections.Counter(pixel_list)
 
+        """
         if map_author == "Anonymous":
             # could just leave it as anonymous if you want
             map_author = ""
+        """
 
-        tags = ""
+        tags = []
         if gamemode == "gravity":
-            tags = "Gravity"
+            tags.append("Gravity")
         elif gamemode == "gravityCTF":
-            tags = "GravityCTF"
+            tags.append("GravityCTF")
 
         index = (((map_id % 10000) % 1000) - 1) // 100
 
@@ -273,7 +279,8 @@ def main(start, end):
             sheet = access_gsheets_api(index)
             gsheets_header_row(sheet)
 
-        input_data = [map_id, map_name, map_author, tags, width, height, tile_data, marsballs]
+        input_data = [map_id, map_name, map_author, tags, width, height,
+                      tile_data, marsballs]
         gsheets_input(input_data, sheet)
 
         x = str(map_id).zfill(5)
@@ -282,15 +289,15 @@ def main(start, end):
         elif map_author == "":
             print(f"{x}: Processed {map_name} on sheet {index}.")
         else:
-            print(f"{x}: Processed {map_name} by {map_author} on sheet {index}.")
+            print(f"{x}: Processed {map_name} by {map_author} on sheet \
+                  {index}.")
         print(f"{time.time() - start_time}s")
 
         previous_index = index
 
         # limit speed. 1/second = 60/minute = 3600/hour
-        # probably wouldn't suggest any less than 1 second sleep
-
-        # note that google sheets limits writing to 100 write requests per 100 seconds
+        # note that google sheets limits to 100 write requests per 100 seconds
+        # wouldn't suggest any less than 1 second sleep
         time.sleep(3)
 
 
@@ -310,8 +317,16 @@ The code will automatically add a header row.
 """
 
 if __name__ == "__main__":
+    # put name of sheet here
+    gsheets_name = "Tagpro Unfortunate Maps Catalogue Parser Test"
+
     start_total_time = time.time()
+
     print("Started Processing")
-    # main(1, 200)
+
+    # put range of map ids you wish to analyse here (start to end inclusive)
+    # please only put ranges 1-1000, 1001-2000, 2001-3000 e.t.c
+    main(1, 1000)
+
     print("Completed Processing")
     print(f"Total processing time: {time.time() - start_total_time}s")
