@@ -4,7 +4,7 @@ Unfortunate Maps Catalogue Webscraper.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 01/10/20
+@last-updated: 12/10/20
 """
 
 
@@ -16,7 +16,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import collections
 
 
-# %%
+# %% JSON/PNG Files
 
 import json
 import PIL
@@ -33,10 +33,7 @@ test url: http://unfortunate-maps.jukejuice.com/show/75634
 
 
 def parse_json(json_file_path):
-    """Read JSON file and return relevant data.
-
-    To-do.
-    """
+    """Read JSON file and return relevant data."""
     gamemode = "normal"
     marsballs = 0
 
@@ -60,10 +57,7 @@ def parse_json(json_file_path):
 
 
 def parse_png(png_file_path):
-    """Read PNG file and return relevant data.
-
-    While this works it requires the png file to be downloaded.
-    """
+    """Read PNG file and return relevant data."""
     map_image = PIL.Image.open(png_file_path, mode="r").convert("RGB")
     width, height = map_image.size
 
@@ -109,7 +103,7 @@ def parse_png(png_file_path):
 
 
 def download_json(map_id):
-    """Download json file from link."""
+    """Download json file from link to map_id.json."""
     json_link = f"http://unfortunate-maps.jukejuice.com/download?mapname={map_id}&type=json&mapid={map_id}"
     with open(f"{map_id}.json", "wb") as f:
         response = requests.get(json_link)
@@ -119,7 +113,7 @@ def download_json(map_id):
 
 
 def download_png(map_id):
-    """Download png file from link."""
+    """Download png file from link to map_id.png."""
     png_link = f"http://unfortunate-maps.jukejuice.com/download?mapname={map_id}&type=png&mapid={map_id}"
     with open(f"{map_id}.png", "wb") as f:
         response = requests.get(png_link)
@@ -128,7 +122,7 @@ def download_png(map_id):
     return f"{map_id}.png"
 
 
-# %%
+# %% HTML Web Scraper
 
 
 def umc_web_scraper(map_id):
@@ -142,7 +136,7 @@ def umc_web_scraper(map_id):
 def parse_map_name(soup):
     """Return map name from HTML soup.
 
-    This function is unnecessary if you just extract the name from json file.
+    Map name can also be retrieved from json file.
     """
     try:
         map_name = soup.find_all("h2", class_="searchable")
@@ -155,7 +149,7 @@ def parse_map_name(soup):
 def parse_map_author(soup):
     """Return map author from HTML soup.
 
-    This function is unnecessary if you just extract the author from json file.
+    Map author can also be retrieved from json file.
     """
     try:
         map_author = soup.find_all("a", class_="searchable")
@@ -166,19 +160,18 @@ def parse_map_author(soup):
 
 
 def html_text_parser(html_text):
-    """Remove HTML fluff.
+    """Remove HTML fluff from a line of HTML code.
 
     e.g [<h2 class="searchable" style="">test</h2>] -> test.
-    Note that this only works for a single HTML code.
     """
     for unparsed_html in html_text:
         return unparsed_html.text.strip()
 
 
-# %%
+# %% Google Sheets API
 
 def access_gsheets_api(index):
-    """Access Google Sheets document."""
+    """Access Google Sheets document via Google Drive API."""
     # create client to interact with Google Drive API
     scope = ["https://spreadsheets.google.com/feeds",
              "https://www.googleapis.com/auth/drive"]
@@ -202,29 +195,83 @@ def gsheets_input(map_data, sheet):
     if len(parse_map_name(umc_web_scraper(map_id))) == 0:
         tags = ["INVALID"]
 
-    row_inputs = [["", str(map_id).zfill(5), map_name, map_author,
-                   ", ".join(tags), "", width, height, tile_data[0],
-                   tile_data[1], tile_data[2], tile_data[3], tile_data[4],
-                   tile_data[5], tile_data[6], tile_data[7], tile_data[8],
-                   tile_data[9], tile_data[10], tile_data[11], tile_data[12],
-                   tile_data[13], tile_data[14], tile_data[15], tile_data[16],
-                   tile_data[17], tile_data[18], tile_data[19], tile_data[20],
-                   tile_data[21], tile_data[22], tile_data[23], tile_data[24],
-                   marsballs, tile_data[25]]]
+    row_inputs = [["",
+                   str(map_id).zfill(5),
+                   map_name,
+                   map_author,
+                   ", ".join(tags),
+                   "",
+                   width,
+                   height,
+                   tile_data[0],
+                   tile_data[1],
+                   tile_data[2],
+                   tile_data[3],
+                   tile_data[4],
+                   tile_data[5],
+                   tile_data[6],
+                   tile_data[7],
+                   tile_data[8],
+                   tile_data[9],
+                   tile_data[10],
+                   tile_data[11],
+                   tile_data[12],
+                   tile_data[13],
+                   tile_data[14],
+                   tile_data[15],
+                   tile_data[16],
+                   tile_data[17],
+                   tile_data[18],
+                   tile_data[19],
+                   tile_data[20],
+                   tile_data[21],
+                   tile_data[22],
+                   tile_data[23],
+                   tile_data[24],
+                   marsballs,
+                   tile_data[25]]]
 
     sheet.update(f"A{row}:AI{row}", row_inputs)
 
 
 def gsheets_header_row(sheet):
     """Initialise sheet with a header row."""
-    header_row = [["Reserved by", "ID", "Name", "Author", "Tags", "Notes",
-                   "Width", "Height", "Wall", "Wall TL", "Wall TR", "Wall BL",
-                   "Wall BR", "Tile", "Background", "Spike", "Powerup",
-                   "Portal", "Gravity Well", "Yellow Flag",
-                   "Red Flag", "Blue Flag", "Red Endzone", "Blue Endzone",
-                   "Boost", "Red Team Boost", "Blue Team Boost",
-                   "Yellow Speed Tile", "Red Speed Tile", "Blue Speed Tile",
-                   "Button", "Gate", "Bomb", "Mars Ball", "Deprecated"]]
+    header_row = [["Reserved by",
+                   "ID",
+                   "Name",
+                   "Author",
+                   "Tags",
+                   "Notes",
+                   "Width",
+                   "Height",
+                   "Wall",
+                   "Wall TL",
+                   "Wall TR",
+                   "Wall BL",
+                   "Wall BR",
+                   "Tile",
+                   "Background",
+                   "Spike",
+                   "Powerup",
+                   "Portal",
+                   "Gravity Well",
+                   "Yellow Flag",
+                   "Red Flag",
+                   "Blue Flag",
+                   "Red Endzone",
+                   "Blue Endzone",
+                   "Boost",
+                   "Red Team Boost",
+                   "Blue Team Boost",
+                   "Yellow Speed Tile",
+                   "Red Speed Tile",
+                   "Blue Speed Tile",
+                   "Button",
+                   "Gate",
+                   "Bomb",
+                   "Mars Ball",
+                   "Deprecated"
+                  ]]
 
     # check if there is already a header row
     if sheet.acell("AI1").value == "?":
@@ -233,7 +280,7 @@ def gsheets_header_row(sheet):
         sheet.update("A1:AI1", header_row)
 
 
-# %%
+# %% Main
 
 def main(start, end):
     """Iterate through urls from start to end (inclusive)."""
@@ -295,7 +342,7 @@ def main(start, end):
         time.sleep(limit_speed)
 
 
-# %%
+# %% 
 
 """
 1-100 refers to sheet 1
