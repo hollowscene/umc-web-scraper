@@ -5,18 +5,22 @@ Processing the Unfortunate Maps Catalogue.
 
 
 ## How to use (needs to be revised)
-**2 main options currently: create a Python environment on your device or use repl.it to run the code. I'm looking into whether its worthwhile to create an executable.**
+**2 main options currently: run the Python code on your own computer or use repl.it to run the code. I'm looking into whether it would be worthwhile to create an executable but may take a bit of time.**
 
-**If you are using repl.it the steps are as follows: Create a new repl and set the main language to Python. Add the python and json files to the main directory. Rename the python file to main.py and the json file to client_secret.json. Follow step 6 below and edit the relevant lines of code. Now just run and it should hopefully work automatically.**
+**If you are using repl.it the steps are as follows: Create a new repl and set the main language to Python. Add the python and json files to the main directory. Rename the python file to main.py and the json file to client_secret.json. Follow step 3 below and edit the relevant lines of code. Now just run and it should hopefully work automatically.**
+
+**Steps for running it on your own computer (only bother with this if you have the relevant modules already installed or you know how to install them)**
 
 1. Request an API key from me via discord (iamflowting#1569). This will come in the form of a .json file for you to download. You must have a key to access the Google Sheets API.
-4. Download the umc_web_scraper.py file from github and save it to your computer. I would suggest making a new folder in your documents folder. In this folder you should save the .py file and the .json API key I sent to you in step 1. You must rename the .json file to "client_secret.json". For example:
+2. Download the umc_web_scraper.py file from github and save it to your computer. I would suggest making a new folder in your documents folder. In this folder you should save the .py file and the .json API key I sent to you in step 1. You must rename the .json file to "client_secret.json". For example:
 ![Step 3](https://i.imgur.com/X7czSSB.png)
-6. Hopefully you have the code open now. Scroll to the very bottom of the code. You will need to edit the following lines:  
+3. Open the code in your Python IDE and scroll to the very bottom of the code. You will need to edit the following lines:  
 gsheets_name = "<*put name of the google sheets here*>"  
 main(<*starting map id*>*, <*ending map id*>)  
 ![Step 5](https://i.imgur.com/Azmvl6O.png)
-7. Open the Google Sheets document you will be writing to. Go to add participants and add the API bot, umc-v1@unfortunate-maps-catalogue-api.iam.gserviceaccount.com, and give it the role of editor. Make sure that in your Google Sheets you have 10 pages per sheet and that the name matches the one you entered in the python code. Each of your pages must have at least 35 columns (up to AI) or you will run into an error in your code.
+4. Open the Google Sheets document you will be writing to. Go to add participants and add the API bot, umc-v1@unfortunate-maps-catalogue-api.iam.gserviceaccount.com, and give it the role of editor. Make sure that in your Google Sheets you have 10 pages per sheet and that the name matches the one you entered in the python code. Each of your pages must have at least 35 columns (up to AI) or you will run into an error in your code.
+5. Run the code in your IDE
+
 
 Extra things to know:  
 * Deprecated column contains: spawn points on old maps (nowadays spawn point information is stored in the .json file instead of the .png file), mars balls on old maps (not verified), possibly more that I haven't spotted. It seems the way the .json/.png files are coded were changed at some point.
