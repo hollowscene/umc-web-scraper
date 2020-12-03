@@ -6,6 +6,9 @@ Processing the Unfortunate Maps Catalogue.
 
 ## How to use (needs to be revised)
 **2 main options currently: create a Python environment on your device or use repl.it to run the code. I'm looking into whether its worthwhile to create an executable.**
+
+**If you are using repl.it the steps are as follows: Create a new repl and set the main language to Python. Add the python and json files to the main directory. Rename the python file to main.py and the json file to client_secret.json. Follow step 6 below and edit the relevant lines of code. Now just run and it should hopefully work automatically.**
+
 1. Request an API key from me via discord (iamflowting#1569). This will come in the form of a .json file for you to download. You must have a key to access the Google Sheets API.
 4. Download the umc_web_scraper.py file from github and save it to your computer. I would suggest making a new folder in your documents folder. In this folder you should save the .py file and the .json API key I sent to you in step 1. You must rename the .json file to "client_secret.json". For example:
 ![Step 3](https://i.imgur.com/X7czSSB.png)
