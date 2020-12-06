@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Unfortunate Maps Catalogue Webscraper v1.2.
+Unfortunate Maps Catalogue Webscraper v1.3.0.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 03/12/20
+@last-updated: 06/12/20
 """
 
 
@@ -208,8 +208,7 @@ def gsheets_input(map_data, sheet):
     Updates row by row using data obtained from the png/json files.
 
     """
-    map_id, map_name, map_author, tags, width, height, tile_data, marsballs \
-        = map_data
+    map_id, map_name, tags, width, height, tile_data, marsballs = map_data
     row = ((map_id - 1) % 100) + 2
 
     # this adds about a second extra per map
@@ -219,7 +218,6 @@ def gsheets_input(map_data, sheet):
     row_inputs = [["",
                    str(map_id).zfill(5),
                    map_name,
-                   map_author,
                    ", ".join(tags),
                    "",
                    width,
@@ -252,7 +250,7 @@ def gsheets_input(map_data, sheet):
                    marsballs,
                    tile_data[25]]]
 
-    sheet.update(f"A{row}:AI{row}", row_inputs)
+    sheet.update(f"A{row}:AH{row}", row_inputs)
 
 
 def gsheets_header_row(sheet):
@@ -260,7 +258,6 @@ def gsheets_header_row(sheet):
     header_row = [["Reserved by",
                    "ID",
                    "Name",
-                   "Author",
                    "Tags",
                    "Notes",
                    "Width",
@@ -320,16 +317,10 @@ def main(start, end):
         json_data = parse_json(download_json(map_id))
         png_data = parse_png(download_png(map_id))
 
-        gamemode, map_name, map_author, marsballs = json_data
+        gamemode, map_name, marsballs = json_data
         width, height, pixel_list = png_data
 
         tile_data = collections.Counter(pixel_list)
-
-        """
-        if map_author == "Anonymous":
-            # could just leave it as anonymous if you want
-            map_author = ""
-        """
 
         tags = []
         if gamemode == "gravity":
@@ -350,18 +341,12 @@ def main(start, end):
             sheet = access_gsheets_api(index)
             gsheets_header_row(sheet)
 
-        input_data = [map_id, map_name, map_author, tags, width, height,
+        input_data = [map_id, map_name, tags, width, height,
                       tile_data, marsballs]
         gsheets_input(input_data, sheet)
 
         x = str(map_id).zfill(5)
-        if map_author is None:
-            print(f"{x}: Invalid map.")
-        elif map_author == "":
-            print(f"{x}: Processed {map_name} on sheet {index}.")
-        else:
-            print(f"{x}: Processed {map_name} by {map_author} on sheet \
-                  {index}.")
+        print(f"{x}: Processed {map_name} on sheet {index}.")
         print(f"{time.time() - start_time}s")
 
         previous_index = index
