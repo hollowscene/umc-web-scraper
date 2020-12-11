@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Unfortunate Maps Catalogue Webscraper v1.3.0.
+Unfortunate Maps Catalogue Webscraper v1.3.1.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 06/12/20
+@last-updated: 11/12/20
 """
 
 
@@ -292,10 +292,10 @@ def gsheets_header_row(sheet):
                    ]]
 
     # check if there is already a header row
-    if sheet.acell("AI1").value == "?":
+    if sheet.acell("AH1").value == "?":
         pass
     else:
-        sheet.update("A1:AI1", header_row)
+        sheet.update("A1:AH1", header_row)
 
 
 # %% Main
@@ -317,7 +317,7 @@ def main(start, end):
         json_data = parse_json(download_json(map_id))
         png_data = parse_png(download_png(map_id))
 
-        gamemode, map_name, marsballs = json_data
+        gamemode, map_name, map_author, marsballs = json_data
         width, height, pixel_list = png_data
 
         tile_data = collections.Counter(pixel_list)
@@ -382,7 +382,7 @@ if __name__ == "__main__":
     limit_speed = 3
 
     # put name of sheet here
-    gsheets_name = "Tagpro Unfortunate Maps Catalogue Parser Test"
+    gsheets_name = "1-1000"
 
     start_total_time = time.time()
 
