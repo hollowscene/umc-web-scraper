@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Unfortunate Maps Catalogue Webscraper v1.4.0.
+Unfortunate Maps Catalogue Webscraper v1.4.1.
 
 @author: iamflowting
 @created-on: 12/09/20
@@ -215,11 +215,17 @@ def gsheets_input(map_data, sheet):
     if len(parse_map_name(umc_web_scraper(map_id))) == 0:
         tags = ["INVALID"]
 
-    row_inputs = [["",
+    row_inputs = [[None,
                    str(map_id).zfill(5),
                    map_name,
                    ", ".join(tags),
-                   "", "","","","","","",
+                   None, 
+                   None,
+                   None,
+                   None,
+                   None,
+                   None,
+                   None,
                    width,
                    height,
                    tile_data[0],
@@ -260,7 +266,12 @@ def gsheets_header_row(sheet):
                    "Map Name",
                    "Tags",
                    "Notes (Optional)",
-                   "","","","","","",
+                   None,
+                   None,
+                   None,
+                   None,
+                   None,
+                   None,
                    "Width",
                    "Height",
                    "Wall",
