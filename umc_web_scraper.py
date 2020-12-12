@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Unfortunate Maps Catalogue Webscraper v1.3.1.
+Unfortunate Maps Catalogue Webscraper v1.4.0.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 11/12/20
+@last-updated: 12/12/20
 """
 
 
@@ -219,7 +219,7 @@ def gsheets_input(map_data, sheet):
                    str(map_id).zfill(5),
                    map_name,
                    ", ".join(tags),
-                   "",
+                   "", "","","","","","",
                    width,
                    height,
                    tile_data[0],
@@ -250,16 +250,17 @@ def gsheets_input(map_data, sheet):
                    marsballs,
                    tile_data[25]]]
 
-    sheet.update(f"A{row}:AH{row}", row_inputs)
+    sheet.update(f"A{row}:AN{row}", row_inputs)
 
 
 def gsheets_header_row(sheet):
     """Initialise sheet with a header row."""
     header_row = [["Reserved by",
-                   "ID",
-                   "Name",
+                   "Map ID",
+                   "Map Name",
                    "Tags",
-                   "Notes",
+                   "Notes (Optional)",
+                   "","","","","","",
                    "Width",
                    "Height",
                    "Wall",
@@ -292,10 +293,10 @@ def gsheets_header_row(sheet):
                    ]]
 
     # check if there is already a header row
-    if sheet.acell("AH1").value == "?":
+    if sheet.acell("AN1").value == "?":
         pass
     else:
-        sheet.update("A1:AH1", header_row)
+        sheet.update("A1:AN1", header_row)
 
 
 # %% Main
@@ -382,7 +383,7 @@ if __name__ == "__main__":
     limit_speed = 3
 
     # put name of sheet here
-    gsheets_name = "1-1000"
+    gsheets_name = "<name of sheet here>"
 
     start_total_time = time.time()
 
