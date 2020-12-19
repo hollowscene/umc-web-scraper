@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Unfortunate Maps Catalogue Webscraper v1.4.1.
+Unfortunate Maps Catalogue Webscraper v1.4.2.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 12/12/20
+@last-updated: 19/12/20
 """
 
 
@@ -103,8 +103,11 @@ def parse_png(png_file_path):
                  (185, 122, 87): 22,    # button
                  (0, 117, 0): 23,       # gate (grey/green/red/blue)
                  (255, 128, 0): 24,     # bomb
-                 (155, 0, 0): 25,       # invalid tile i found on old maps
-                 (0, 0, 155): 25        # invalid tile i found on old maps
+                 (155, 0, 0): 25,       # invalid tile
+                 (0, 0, 155): 25,       # invalid tile
+                 (179, 179, 179): 25,   # invalid tile found on 661
+                 (180, 180, 180): 25,   # invalid tile found on 661
+                 (255, 255, 255): 25    # invalid tile found on 661
                  }
 
     for pixel_data in map_pixel_data:
