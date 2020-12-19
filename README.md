@@ -9,7 +9,7 @@ These maps could not be processed by the code.
 - 666-669 (PNG files were in a different format)
 - 729-735 (JSON files not found)
 - 847 (PNG file not found)
-- 998-1001 (JSON files not found)
+- 998-1001 (JSON files broken)
 
 
 ## How to use (needs to be revised)
