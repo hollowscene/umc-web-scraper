@@ -10,6 +10,7 @@ These maps could not be processed by the code.
 - 729-735 (JSON files not found)
 - 846 (PNG file not found)
 - 998-1001 (JSON files broken)
+- 1965-1967 (PNG files broken)
 
 
 ## How to use (needs to be revised)
