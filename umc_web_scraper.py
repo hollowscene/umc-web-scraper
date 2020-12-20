@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Unfortunate Maps Catalogue Webscraper v1.4.2.
+Unfortunate Maps Catalogue Webscraper v1.4.3.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 19/12/20
+@last-updated: 20/12/20
 """
 
 
@@ -341,9 +341,12 @@ def main(start, end):
         if gamemode == "gravity":
             tags.append("Gravity")
         elif gamemode == "gravityCTF":
-            tags.append("GravityCTF")
+            tags.append("Gravity")
 
-        index = (((map_id % 10000) % 1000) - 1) // 100
+        if map_id % 1000 == 0:
+          index = 9
+        else:
+          index = (((map_id % 10000) % 1000) - 1) // 100
 
         # only open a new sheet if you need to
         if map_id == start:
@@ -393,11 +396,11 @@ if __name__ == "__main__":
     # limit speed. 1/second = 60/minute = 3600/hour
     # note that google sheets limits to 100 write requests per 100 seconds
     # wouldn't suggest any less than 1 second sleep
-    # default speed: 3s
-    limit_speed = 3
+    # default speed: 1.5s
+    limit_speed = 1.5
 
     # put name of sheet here
-    gsheets_name = "<name of sheet here>"
+    gsheets_name = "Unfortunate Maps <insert map range>"
 
     start_total_time = time.time()
 
@@ -406,7 +409,7 @@ if __name__ == "__main__":
     # put range of map ids you wish to process here (start to end inclusive)
     # please only put ranges within 1-1000, 1001-2000, 2001-3000 e.t.c
     # i.e 200-500 is okay but 980-1100 is not okay.
-    main(1, 1000)
+    main("start", "end")
 
     print("Completed Processing")
     print(f"Total processing time: {time.time() - start_total_time}s")
