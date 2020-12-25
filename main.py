@@ -110,8 +110,8 @@ if __name__ == "__main__":
     # limit speed. 1/second = 60/minute = 3600/hour
     # note that google sheets limits to 100 write requests per 100 seconds
     # wouldn't suggest any less than 1 second sleep
-    # default speed: 1.5s
-    limit_speed = 1.5
+    # default speed: 5s
+    limit_speed = 5
 
     # put name of sheet here
     gsheets_name = "umc-testing"
