@@ -50,12 +50,12 @@ def main(start, end):
         tile_data = collections.Counter(pixel_list)
 
         tags = []
-        if str(map_id) != latest_version:
-            tags.append(f"Prototype ({latest_version})")
         if gamemode == "gravity":
             tags.append("Gravity")
         elif gamemode == "gravityCTF":
             tags.append("Gravity")
+        if str(map_id) != latest_version:
+            tags = [f"Prototype ({latest_version})"]
 
         if map_id % 1000 == 0:
             index = 9
