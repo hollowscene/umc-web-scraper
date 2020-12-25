@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Unfortunate Maps Catalogue Webscraper v1.5.1.
+Unfortunate Maps Catalogue Webscraper.
 
 @author: iamflowting
 @created-on: 12/09/20
@@ -28,15 +28,14 @@ def main(start, end):
         start_time = time.time()
         soup = wf.umc_web_scraper(map_id)
         versions, remixes = wf.scrape_lists(soup)
-        latest_version = map_id
         if versions:
             latest_version = versions.find("a")
             if latest_version is None:
-                latest_version = map_id
+                latest_version = str(map_id)
             else:
                 latest_version = latest_version["href"][6:]
         else:
-            latest_version = map_id
+            latest_version = str(map_id)
 
         # map_name = html_text_parser(parse_map_name(soup))
         # map_author = html_text_parser(parse_map_author(soup))
