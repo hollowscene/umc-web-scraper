@@ -67,7 +67,8 @@ def scrape_lists(soup):
         versions = lists[4]
         remixes = lists[5]
     elif len(lists) == 3:
-        print("3 dropdown menus found in html soup. Map invalid?")
+        # this occurs when there is an invalid map ("Oops, something went wrong" error page)
+        pass
     else:
         print(len(lists))
         raise Exception("Not 3 or 6 dropdown menus found.")
