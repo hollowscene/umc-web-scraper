@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Unfortunate Maps Catalogue Webscraper v1.5.0.
+Unfortunate Maps Catalogue Webscraper v1.5.1.
 
 @author: iamflowting
 @created-on: 12/09/20
@@ -50,7 +50,7 @@ def main(start, end):
         tile_data = collections.Counter(pixel_list)
 
         tags = []
-        if map_id != latest_version:
+        if str(map_id) != latest_version:
             tags.append(f"Prototype ({latest_version})")
         if gamemode == "gravity":
             tags.append("Gravity")
