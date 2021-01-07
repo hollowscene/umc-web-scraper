@@ -4,7 +4,7 @@ Unfortunate Maps Catalogue Webscraper - Webscraping Functions.
 
 @author: iamflowting
 @created-on: 24/12/20
-@last-updated: 25/12/20
+@last-updated: 07/01/21
 """
 
 
@@ -32,7 +32,7 @@ def parse_map_name(soup):
     """
     try:
         map_name = soup.find_all("h2", class_="searchable")
-    except:
+    except Exception:
         print("Could not find map name. Invalid map?")
         map_name = None
     return map_name
@@ -46,13 +46,14 @@ def parse_map_author(soup):
     """
     try:
         map_author = soup.find_all("a", class_="searchable")
-    except:
+    except Exception:
         print("Could not find author. Invalid map?")
         map_author = None
     return map_author
 
 
 def scrape_lists(soup):
+    """Webscrapes versions and remixes."""
     # look for drop down menu
     # can ignore remix since remix is literally just if they have the same name
     # prototype look through for the most recent version/map id
@@ -60,14 +61,15 @@ def scrape_lists(soup):
     remixes = []
     try:
         lists = soup.find_all("ul", class_="dropdown-menu")
-    except:
+    except Exception:
         raise Exception("Could not find any dropdown menus in html soup.")
     if len(lists) == 6:
         # 5th item is versions, 6th item is remixes
         versions = lists[4]
         remixes = lists[5]
     elif len(lists) == 3:
-        # this occurs when there is an invalid map ("Oops, something went wrong" error page)
+        # this occurs when there is an invalid map
+        # ("Oops, something went wrong" error page)
         pass
     else:
         print(len(lists))

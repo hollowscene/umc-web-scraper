@@ -4,7 +4,7 @@ Unfortunate Maps Catalogue Webscraper - Google Sheets API Functions.
 
 @author: iamflowting
 @created-on: 25/12/20
-@last-updated: 25/12/20
+@last-updated: 07/01/21
 """
 
 
@@ -30,18 +30,27 @@ def access_gsheets_api(gsheets_name, index):
     return sheet
 
 
-def gsheets_input(map_data, sheet):
+def gsheets_input(map_data, sheet, index):
     """Update values of the Google Sheets.
 
     Updates row by row using data obtained from the png/json files.
-
     """
+    # first check if there is already data in a row
     map_id, map_name, tags, width, height, tile_data, marsballs = map_data
     row = ((map_id - 1) % 100) + 2
 
+    if sheet.acell(f"B{row}").value != "":
+        raise Exception(f"Data detected when trying to write map {map_id} to "
+                        f"row {row} on sheet {index}. Please verify that you "
+                        "have entered the correct spreadsheet name and map "
+                        "range. This will overwrite whatever is currently in "
+                        "the row. If you wish to continue then please clear "
+                        "the data in the map_id column")
+
     # this adds about a second extra per map
-    if len(wf.parse_map_name(wf.umc_web_scraper(map_id))) == 0:
-        tags = ["INVALID"]
+    if tags != ["COULD NOT PROCESS"]:
+        if len(wf.parse_map_name(wf.umc_web_scraper(map_id))) == 0:
+            tags = ["INVALID"]
 
     row_inputs = [[None,
                    str(map_id).zfill(5),
@@ -87,7 +96,7 @@ def gsheets_input(map_data, sheet):
     sheet.update(f"A{row}:AN{row}", row_inputs)
 
 
-def gsheets_header_row(sheet):
+def gsheets_header_row(sheet, worksheet_name):
     """Initialise sheet with a header row."""
     header_row = [["Reserved by",
                    "Map ID",
@@ -131,8 +140,10 @@ def gsheets_header_row(sheet):
                    "Deprecated"
                    ]]
 
-    # check if there is already a header row
-    if sheet.acell("AN1").value == "?":
+    # check if there is already a header row (only checks map id)
+    if sheet.acell("B1").value == "Map ID":
         pass
     else:
         sheet.update("A1:AN1", header_row)
+
+    sheet.update_title(worksheet_name)

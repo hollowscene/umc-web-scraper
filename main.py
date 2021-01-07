@@ -4,7 +4,7 @@ Unfortunate Maps Catalogue Webscraper.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 25/12/20
+@last-updated: 07/01/21
 """
 
 
@@ -40,51 +40,78 @@ def main(start, end):
         # map_name = html_text_parser(parse_map_name(soup))
         # map_author = html_text_parser(parse_map_author(soup))
 
-        json_data = wf.parse_json(wf.download_json(map_id))
-        png_data = wf.parse_png(wf.download_png(map_id))
+        try:
+            json_data = wf.parse_json(wf.download_json(map_id))
+            png_data = wf.parse_png(wf.download_png(map_id))
 
-        gamemode, map_name, map_author, marsballs = json_data
-        width, height, pixel_list = png_data
+            gamemode, map_name, map_author, marsballs = json_data
+            width, height, pixel_list = png_data
 
-        tile_data = collections.Counter(pixel_list)
+            tile_data = collections.Counter(pixel_list)
 
-        tags = []
-        if gamemode == "gravity":
-            tags.append("Gravity")
-        elif gamemode == "gravityCTF":
-            tags.append("Gravity")
-        if str(map_id) != latest_version:
-            tags = [f"Prototype ({latest_version})"]
+            tags = []
+            if gamemode == "gravity":
+                tags.append("Gravity")
+            elif gamemode == "gravityCTF":
+                tags.append("Gravity")
+            if str(map_id) != latest_version:
+                tags = [f"Prototype ({latest_version})"]
+
+        except Exception:
+            map_name = ""
+            tags = ["COULD NOT PROCESS"]
+            width = ""
+            height = ""
+            tile_data = [""] * 26
+            marsballs = ""
 
         if map_id % 1000 == 0:
             index = 9
         else:
             index = (((map_id % 10000) % 1000) - 1) // 100
 
+        # iterating the index once to bypass the faq page
+        index += 1
+        # first map in range. i.e if given 1823, page_start = 1801
+        page_start = ((map_id // 100) * 100) + 1
+
         # only open a new sheet if you need to
         if map_id == start:
             sheet = gsf.access_gsheets_api(gsheets_name, index)
-            gsf.gsheets_header_row(sheet)
+            gsf.gsheets_header_row(sheet, f"{page_start}-{page_start + 99}")
             previous_index = index
         elif previous_index != index:
             # open a new sheet and generate a header row
             # note that this DOES NOT create a new sheet
             sheet = gsf.access_gsheets_api(gsheets_name, index)
-            gsf.gsheets_header_row(sheet)
+            gsf.gsheets_header_row(sheet, f"{page_start}-{page_start + 99}")
+        else:
+            pass
 
         input_data = [map_id, map_name, tags, width, height,
                       tile_data, marsballs]
-        gsf.gsheets_input(input_data, sheet)
+        gsf.gsheets_input(input_data, sheet, index)
 
         x = str(map_id).zfill(5)
-        print(f"{x}: Processed {map_name} on sheet {index}.")
-        print(f"{time.time() - start_time}s")
+        if tags == ["COULD NOT PROCESS"]:
+            print(f"{x}: Could not be processed.")
+            print(f"{time.time() - start_time}s")
+        else:
+            print(f"{x}: Processed {map_name} on sheet {index}.")
+            print(f"{time.time() - start_time}s")
 
         previous_index = index
 
         # automatically deletes json/png file
-        os.remove(f"{map_id}.json")
-        os.remove(f"{map_id}.png")
+        try:
+            os.remove(f"{map_id}.json")
+        except FileNotFoundError:
+            pass
+
+        try:
+            os.remove(f"{map_id}.png")
+        except FileNotFoundError:
+            pass
 
         # wait time after each map is processed
         time.sleep(limit_speed)
@@ -122,7 +149,7 @@ if __name__ == "__main__":
     # put range of map ids you wish to process here (start to end inclusive)
     # please only put ranges within 1-1000, 1001-2000, 2001-3000 e.t.c
     # i.e 200-500 is okay but 980-1100 is not okay.
-    main(60001, 60200)
+    main("start", "end")
 
     print("Completed Processing")
     print(f"Total processing time: {time.time() - start_total_time}s")

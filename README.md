@@ -24,11 +24,9 @@ Extra things to know:
 
 
 ## To-do
-* Auto-update page name (can do so whenever you update the header row). Use sheet.update_title.
-* Add functionality that checks whether a cell that is about to be updated is already filled and raise exception if so. Read whatever is in the map_id column and if there is data then raise an error: "Data detected in {row}. Please verify that you have entered the correct spreadsheet name and map range. This will overwrite whatever is currently in the row. Please clear the data in map_id if you wish to continue".
 * Can potato/ghost maps be automated? Might be on the json file.
 * Automatically protect ranges of cells once they have been completed.
-* Verify whether the current check for invalid maps is correct. It may be possible to optimise it as well.
+* Verify whether the current check for invalid maps is correct. It might also be possible to optimise the check.
 * Implement a variant of the code that can be run on past spreadsheets without writing over any data (read what is currently in the tags section, then update it with the new prototype functionality and/or any other tag changes). 
 * It should be possible to only use 1 write request per page by storing a huge list of all the row_inputs which would mean that the code doesn't run into the API write limit. This would likely also reduce computational time because there are less API requests.
 * Improve commenting.
