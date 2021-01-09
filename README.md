@@ -21,6 +21,8 @@ For repl.it users: Import the github page. Set the main language to Python and p
 Extra things to know:  
 * Deprecated column contains: spawn points on old maps (nowadays spawn point information is stored in the .json file instead of the .png file), mars balls on old maps (not verified), possibly more that I haven't spotted. It seems the way the .json/.png files are coded were changed at some point. 
 * If you want you can change time.sleep(x) depending on how good your computer/internet is. I personally run it at x = 1.5 (1.5 second wait between each map) however it should be fine to run it as low as x = 1. However I do not recommend ever going below 1s as the Google Sheets API does have a write limit of 100 write requests per 100 seconds per user.
+* Test run using Spyder on my laptop on 09/01/21 (5s sleep): 2001-2101 took 1018.1s.
+* Test run using repl.it on 09/01/21 (5s sleep): 2301-2800 took 2915.8s.
 
 
 ## To-do
