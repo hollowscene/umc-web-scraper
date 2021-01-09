@@ -4,7 +4,7 @@ Unfortunate Maps Catalogue Webscraper.
 
 @author: iamflowting
 @created-on: 12/09/20
-@last-updated: 07/01/21
+@last-updated: 09/01/21
 """
 
 
@@ -50,10 +50,7 @@ def main(start, end):
             tile_data = collections.Counter(pixel_list)
 
             tags = []
-            if gamemode == "gravity":
-                tags.append("Gravity")
-            elif gamemode == "gravityCTF":
-                tags.append("Gravity")
+            game_mode_tags = []
             if str(map_id) != latest_version:
                 tags = [f"Prototype ({latest_version})"]
 
@@ -88,8 +85,55 @@ def main(start, end):
         else:
             pass
 
-        input_data = [map_id, map_name, tags, width, height,
-                      tile_data, marsballs]
+        if len(tags) == 0:
+            # automate gamemodes
+            yflag = tile_data[11]
+            rflag = tile_data[12]
+            bflag = tile_data[13]
+            rendz = tile_data[14]
+            bendz = tile_data[15]
+            # mars balls = marsball
+            # scoring_mechs = [yflag, rflag, bflag, rendz, bendz]
+            mbtoggle = 0
+            mmcount = 0
+            if rflag and bflag and rflag == bflag:
+                game_mode_tags.append("CTF")
+                mmcount += 1
+                if marsballs == 1:
+                    game_mode_tags.append("MB")
+                    mbtoggle = 1
+                    mmcount += 1
+                if yflag:
+                    mmcount += 1
+            if rendz and bendz and rendz == bendz:
+                # there are endzones for both sides of equal size
+                mmcount += 1
+                if yflag == 1:
+                    # + 1 yellow flag = nf
+                    game_mode_tags.append("NF")
+                if yflag == 2:
+                    # + 2 yellow flags = 2nf
+                    game_mode_tags.append("2NF")
+                if rflag and bflag and rflag == bflag:
+                    game_mode_tags.append("DTF")
+                if marsballs == 1 and mbtoggle == 0:
+                    game_mode_tags.append("MB")
+                if marsballs > 1:
+                    game_mode_tags.append("PL")
+            if yflag > 2 or (rflag == bflag and rflag > 1) or marsballs > 1:
+                game_mode_tags.append("ESM")
+
+        if game_mode_tags and len(tags) == 0:
+            tags.append("Map")
+            if gamemode == "gravity" or gamemode == "gravityCTF":
+                tags.append("Gravity")
+            for tag in game_mode_tags:
+                tags.append(tag)
+            if mmcount >= 2:
+                tags.append("MM")
+
+        input_data = [map_id, map_name, tags, width, height, tile_data,
+                      marsballs]
         gsf.gsheets_input(input_data, sheet, index)
 
         x = str(map_id).zfill(5)
@@ -149,7 +193,7 @@ if __name__ == "__main__":
     # put range of map ids you wish to process here (start to end inclusive)
     # please only put ranges within 1-1000, 1001-2000, 2001-3000 e.t.c
     # i.e 200-500 is okay but 980-1100 is not okay.
-    main("start", "end")
+    main(75634, 75634)
 
     print("Completed Processing")
     print(f"Total processing time: {time.time() - start_total_time}s")
